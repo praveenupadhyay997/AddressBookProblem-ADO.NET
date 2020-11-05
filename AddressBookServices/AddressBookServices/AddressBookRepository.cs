@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Transactions;
 
 namespace AddressBookServices
 {
@@ -191,6 +192,55 @@ namespace AddressBookServices
                     /// Binding the parameter to the formal parameters
                     command.Parameters.AddWithValue("@parameter1", newData);
                     command.Parameters.AddWithValue("@parameter2", name);
+                    /// Storing the result of the executed query
+                    var result = command.ExecuteNonQuery();
+                    connectionToServer.Close();
+                    if (result != 0)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            /// Catching any type of exception generated during the run time
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }
+        /// <summary>
+        /// UC4 -- Method to update the contact type or address book name of a contact when name passed
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="newData"></param>
+        /// <param name="choice"></param>
+        /// <returns></returns>
+        public bool DeleteContactUsingName()
+        {
+            Console.WriteLine("Enter the first name whose contact you want to delete :");
+            string name = Console.ReadLine();
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            try
+            {
+                /// Using the connection established
+                using (connectionToServer)
+                {
+                    
+                    /// Opening the connection
+                    connectionToServer.Open();
+                    /// Update query  for the table and binding with the parameter passed
+                    string query = "delete from dbo.addressBookDatabase where firstName = @parameter1";
+                    /// Impementing the command on the connection fetched database table
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Binding the parameter to the formal parameters
+                    command.Parameters.AddWithValue("@parameter1", name);
                     /// Storing the result of the executed query
                     var result = command.ExecuteNonQuery();
                     connectionToServer.Close();

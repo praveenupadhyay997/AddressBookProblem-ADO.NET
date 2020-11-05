@@ -87,6 +87,8 @@ namespace AddressBookServices
             Console.WriteLine(repository.AddDataToTable(bookModel) ? "Inserted Successfully" : "Insert failed");
             /// UC3 -- Update a record to the address book
             UpdateCall();
+            /// UC4 -- Delete a record from the table
+            Console.WriteLine(repository.DeleteContactUsingName() ? "Deleted Successfully" : "Delete failed");
         }
     }
 }
