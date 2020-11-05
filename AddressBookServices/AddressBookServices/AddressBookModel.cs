@@ -14,7 +14,7 @@ namespace AddressBookServices
     /// Class to map the relational data base model to a entity
     /// Contains fields mimicing the exact replica of that of the table level
     /// </summary>
-    class AddressBookModel
+    public class AddressBookModel
     {
         public string firstName { get; set; }
         public string secondName { get; set; }

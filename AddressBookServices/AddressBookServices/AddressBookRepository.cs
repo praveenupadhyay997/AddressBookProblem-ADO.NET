@@ -6,6 +6,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
@@ -97,6 +98,57 @@ namespace AddressBookServices
                 throw new Exception(ex.Message);
             }
             /// Alway ensuring the closing of the connection
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }
+        /// <summary>
+        /// UC2 -- Method to insert contact to the table using a stored procedure
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public bool AddDataToTable(AddressBookModel model)
+        {
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            try
+            {
+                /// Using the connection established
+                using (connectionToServer)
+                {
+                    /// Implementing the stored procedure
+                    SqlCommand command = new SqlCommand("SpAddcontactRecords", connectionToServer);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@fname", model.firstName);
+                    command.Parameters.AddWithValue("@sname", model.secondName);
+                    command.Parameters.AddWithValue("@address", model.address);
+                    command.Parameters.AddWithValue("@city", model.city);
+                    command.Parameters.AddWithValue("@state", model.state);
+                    command.Parameters.AddWithValue("@zip", model.zip);
+                    command.Parameters.AddWithValue("@phoneNo", model.phoneNumber);
+                    command.Parameters.AddWithValue("@email", model.emailId);
+                    command.Parameters.AddWithValue("@type", model.contactType);
+                    command.Parameters.AddWithValue("@bookName", model.addressBookName);
+                    /// Opening the connection
+                    connectionToServer.Open();
+                    var result = command.ExecuteNonQuery();
+                    connectionToServer.Close();
+                    /// Return the result of the transaction i.e. the dml operation to update data
+                    if (result != 0)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            /// Catching any type of exception generated during the run time
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
             finally
             {
                 connectionToServer.Close();
