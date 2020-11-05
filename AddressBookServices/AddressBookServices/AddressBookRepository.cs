@@ -154,5 +154,62 @@ namespace AddressBookServices
                 connectionToServer.Close();
             }
         }
+        /// <summary>
+        /// UC3 -- Method to update the contact type or address book name of a contact when name passed
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="newData"></param>
+        /// <param name="choice"></param>
+        /// <returns></returns>
+        public bool EditContactUsingName(string name, string newData, int choice)
+        {
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            try
+            {
+                /// Using the connection established
+                using (connectionToServer)
+                {
+                    string query = "";
+                    /// Opening the connection
+                    connectionToServer.Open();
+                    /// Update query  for the table and binding with the parameter passed
+                    if (choice == 1)
+                    {
+                        query = @"update dbo.addressBookDatabase set contactType = @parameter1
+                    where firstName = @parameter2";
+                    }
+                    else if(choice == 2)
+                    {
+                        query = @"update dbo.addressBookDatabase set addressBookName= @parameter1
+                   where firstName = @parameter2";
+                    }
+                    /// Impementing the command on the connection fetched database table
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Binding the parameter to the formal parameters
+                    command.Parameters.AddWithValue("@parameter1", newData);
+                    command.Parameters.AddWithValue("@parameter2", name);
+                    /// Storing the result of the executed query
+                    var result = command.ExecuteNonQuery();
+                    connectionToServer.Close();
+                    if (result != 0)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            /// Catching any type of exception generated during the run time
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }
     }
 }
