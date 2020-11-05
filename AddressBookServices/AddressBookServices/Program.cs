@@ -5,11 +5,13 @@
 // <creator Name="Praveen Kumar Upadhyay"/>
 // --------------------------------------------------------------------------------------------------------------------
 using System;
+using System.ComponentModel;
 
 namespace AddressBookServices
 {
     class Program
     {
+        public static AddressBookRepository repository = new AddressBookRepository();
         public static AddressBookModel bookModel = new AddressBookModel();
         /// <summary>
         /// Method to take the input for the new records
@@ -37,6 +39,38 @@ namespace AddressBookServices
             Console.WriteLine("Enter the address book name :");
             bookModel.addressBookName = Console.ReadLine();
         }
+        /// <summary>
+        /// Method to take input to update the record inside the address book with help of name passed
+        /// </summary>
+        public static void UpdateCall()
+        {
+            Console.WriteLine("Enter the name of the record to edit.");
+            string recordName = Console.ReadLine();
+            Console.WriteLine("Enter the choice you want to update ===>");
+            Console.WriteLine("1.Contact Type.");
+            Console.WriteLine("2.Address Book Name.");
+            int choice = Convert.ToInt32(Console.ReadLine());
+            bool result = false;
+            switch(choice)
+            {
+                case 1:
+                    Console.WriteLine("Enter the new contact type (Friends,Family and Profession) -");
+                    string type = Console.ReadLine();
+                    result = repository.EditContactUsingName(recordName, type, choice);
+                        break;
+                case 2:
+                    Console.WriteLine("Enter the address book name -");
+                    string addressBookName = Console.ReadLine();
+                    result = repository.EditContactUsingName(recordName, addressBookName, choice);
+                    break;
+
+                default:
+                    Console.WriteLine("Entered choice is wrong.....");
+                    break;
+            }
+            /// Testing for the success of the update to the table
+                Console.WriteLine((result)? "Updated Successfully": "Update failed");
+        }
         static void Main(string[] args)
         {
             Console.WriteLine("==================================================");
@@ -50,7 +84,9 @@ namespace AddressBookServices
             /// UC2 -- Insert a record to the address book
             TakeInputOfRecords();
             /// Testing for the success of the insertion to the table
-            Console.WriteLine(repository.AddDataToTable(bookModel)? "Inserted Successfully": "Insert failed");
+            Console.WriteLine(repository.AddDataToTable(bookModel) ? "Inserted Successfully" : "Insert failed");
+            /// UC3 -- Update a record to the address book
+            UpdateCall();
         }
     }
 }
