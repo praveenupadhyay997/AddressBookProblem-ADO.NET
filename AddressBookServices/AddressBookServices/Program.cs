@@ -71,6 +71,16 @@ namespace AddressBookServices
             /// Testing for the success of the update to the table
                 Console.WriteLine((result)? "Updated Successfully": "Update failed");
         }
+        public static void GetByCityOrState()
+        {
+            Console.WriteLine("Enter the choice you want to retrieve data ===>");
+            Console.WriteLine("1.City.");
+            Console.WriteLine("2.State.");
+            int choice = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter the name of City or State by which you want the data -");
+            string cityOrState = Console.ReadLine();
+            repository.GetTheDetailOfRecordForCityOrState(cityOrState, choice);
+        }
         static void Main(string[] args)
         {
             Console.WriteLine("==================================================");
@@ -89,6 +99,8 @@ namespace AddressBookServices
             UpdateCall();
             /// UC4 -- Delete a record from the table
             Console.WriteLine(repository.DeleteContactUsingName() ? "Deleted Successfully" : "Delete failed");
+            /// UC5 -- Get the details of the record of the contacts in the address book of a city or state
+            GetByCityOrState();
         }
     }
 }
