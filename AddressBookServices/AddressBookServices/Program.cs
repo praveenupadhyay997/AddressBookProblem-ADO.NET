@@ -71,6 +71,9 @@ namespace AddressBookServices
             /// Testing for the success of the update to the table
                 Console.WriteLine((result)? "Updated Successfully": "Update failed");
         }
+        /// <summary>
+        /// Method driver for the city or state details by particular city or state
+        /// </summary>
         public static void GetByCityOrState()
         {
             Console.WriteLine("Enter the choice you want to retrieve data ===>");
@@ -80,6 +83,19 @@ namespace AddressBookServices
             Console.WriteLine("Enter the name of City or State by which you want the data -");
             string cityOrState = Console.ReadLine();
             repository.GetTheDetailOfRecordForCityOrState(cityOrState, choice);
+        }
+        /// <summary>
+        /// Method driver for the city or state count by particular city or state
+        /// </summary>
+        public static void GetCountByParticularCityOrState()
+        {
+            Console.WriteLine("Enter the choice you want to retrieve data ===>");
+            Console.WriteLine("1.City.");
+            Console.WriteLine("2.State.");
+            int choice = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter the name of City or State by which you want the data -");
+            string cityOrState = Console.ReadLine();
+            repository.GetCountOfCityOrState(cityOrState, choice);
         }
         static void Main(string[] args)
         {
@@ -101,6 +117,8 @@ namespace AddressBookServices
             Console.WriteLine(repository.DeleteContactUsingName() ? "Deleted Successfully" : "Delete failed");
             /// UC5 -- Get the details of the record of the contacts in the address book of a city or state
             GetByCityOrState();
+            /// UC6 -- Get the count of the record of the contacts in the address book of a city or state
+            GetCountByParticularCityOrState();
         }
     }
 }

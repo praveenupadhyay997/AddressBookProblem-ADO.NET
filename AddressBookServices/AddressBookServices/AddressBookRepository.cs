@@ -342,5 +342,70 @@ namespace AddressBookServices
                 connectionToServer.Close();
             }
         }
+        public void GetCountOfCityOrState(string data, int choice)
+        {
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            string query = "";
+            try
+            {
+                /// Using the connection established
+                using (connectionToServer)
+                {
+                    if (choice == 1)
+                    {
+                        /// Query to get the data from the table
+                        query = @"select Count(firstName) from dbo.addressBookDatabase
+                                   where city=@parameter group by city";
+                    }
+                    else if (choice == 2)
+                    {
+                        // Query to get the data from the table
+                        query = @"select Count(firstName) from dbo.addressBookDatabase
+                                   where state=@parameter group by state";
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong Choice....");
+                    }
+                    /// Impementing the command on the connection fetched database table
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Binding the parameter to the formal parameters
+                    command.Parameters.AddWithValue("@parameter", data);
+                    /// Opening the connection to start mapping
+                    connectionToServer.Open();
+                    /// executing the sql data reader to fetch the records
+                    SqlDataReader reader = command.ExecuteReader();
+                    /// executing for not null
+                    if (reader.HasRows)
+                    {
+                        /// Moving to the next record from the table
+                        /// Mapping the data to the retrieved data from executing the query on the table
+                        while (reader.Read())
+                        {
+                            int count = reader.GetInt32(0);
+                            Console.WriteLine($"Number of Contacts Stored in {data} = {count}");
+                            Console.WriteLine("\n\n");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No Data found");
+                    }
+                    reader.Close();
+                }
+            }
+            /// Catching any type of exception generated during the run time
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }
     }
 }
