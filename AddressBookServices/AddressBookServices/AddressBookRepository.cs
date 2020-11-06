@@ -4,15 +4,14 @@
 // </copyright>
 // <creator Name="Praveen Kumar Upadhyay"/>
 // --------------------------------------------------------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
-using System.Transactions;
-
 namespace AddressBookServices
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+    using System.Text;
+    using System.Transactions;
     /// <summary>
     /// Class to execute the ado.net query implementation on the underlying sql database
     /// Using the Data.SqlClient package to establish connections
@@ -342,6 +341,11 @@ namespace AddressBookServices
                 connectionToServer.Close();
             }
         }
+        /// <summary>
+        /// UC6 -- Function to Get the count of the records stored inside the address book database 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="choice"></param>
         public void GetCountOfCityOrState(string data, int choice)
         {
             /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
@@ -402,6 +406,73 @@ namespace AddressBookServices
             {
                 throw new Exception(ex.Message);
             }
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }
+        /// <summary>
+        /// UC7 -- Function to ge the sorted data by alphabetically for the passed city
+        /// </summary>
+        /// <param name="cityName"></param>
+        public void SortDetailsAlphabeticallyByCity(string cityName)
+        {
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            /// Creating the address book model class object
+            AddressBookModel bookModel = new AddressBookModel();
+            try
+            {
+                using (connectionToServer)
+                {
+                    /// Query to get all the data from the table
+                    string query = @"select * from addressBookDatabase where city = @parameter order by firstName";
+                    /// Impementing the command on the connection fetched database table
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Binding the parameter to the formal parameters
+                    command.Parameters.AddWithValue("@parameter", cityName);
+                    /// Opening the connection to start mapping
+                    connectionToServer.Open();
+                    /// executing the sql data reader to fetch the records
+                    SqlDataReader reader = command.ExecuteReader();
+                    /// executing for not null
+                    if (reader.HasRows)
+                    {
+                        /// Moving to the next record from the table
+                        /// Mapping the data to the employee model class object
+                        while (reader.Read())
+                        {
+                            bookModel.firstName = reader.GetString(0);
+                            bookModel.secondName = reader.GetString(1);
+                            bookModel.address = reader.GetString(2);
+                            bookModel.city = reader.GetString(3);
+                            bookModel.state = reader.GetString(4);
+                            bookModel.zip = reader.GetInt64(5);
+                            bookModel.phoneNumber = reader.GetInt64(6);
+                            bookModel.emailId = reader.GetString(7);
+                            bookModel.contactType = reader.GetString(8);
+                            bookModel.addressBookName = reader.GetString(9);
+                            Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
+                                $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
+                                $" Phone Number: {bookModel.phoneNumber}\n Contact Type: {bookModel.contactType}\n Address Book Name : {bookModel.addressBookName}");
+                            Console.WriteLine("\n\n");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No data found");
+                    }
+                    reader.Close();
+                }
+            }
+            /// Catching the null record exception
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            /// Alway ensuring the closing of the connection
             finally
             {
                 connectionToServer.Close();
