@@ -261,5 +261,86 @@ namespace AddressBookServices
                 connectionToServer.Close();
             }
         }
+        /// <summary>
+        /// UC5 -- Function to get the detail of the records belonging to a city or state
+        /// </summary>
+        /// <param name="gender"></param>
+        public void GetTheDetailOfRecordForCityOrState(string data, int choice)
+        {
+            AddressBookModel bookModel = new AddressBookModel();
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            string query = "";
+            try
+            {
+                /// Using the connection established
+                using (connectionToServer)
+                {
+                    if (choice == 1)
+                    {
+                        /// Query to get the data from the table
+                        query = @"select * from dbo.addressBookDatabase
+                                   where city=@parameter";
+                    }
+                    else if(choice == 2)
+                    {
+                        // Query to get the data from the table
+                        query = @"select * from dbo.addressBookDatabase
+                                   where state=@parameter";
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong Choice....");
+                    }
+                    /// Impementing the command on the connection fetched database table
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Binding the parameter to the formal parameters
+                    command.Parameters.AddWithValue("@parameter", data);
+                    /// Opening the connection to start mapping
+                    connectionToServer.Open();
+                    /// executing the sql data reader to fetch the records
+                    SqlDataReader reader = command.ExecuteReader();
+                    /// executing for not null
+                    if (reader.HasRows)
+                    {
+                        /// Moving to the next record from the table
+                        /// Mapping the data to the retrieved data from executing the query on the table
+                        while (reader.Read())
+                        {
+                            bookModel.firstName = reader.GetString(0);
+                            bookModel.secondName = reader.GetString(1);
+                            bookModel.address = reader.GetString(2);
+                            bookModel.city = reader.GetString(3);
+                            bookModel.state = reader.GetString(4);
+                            bookModel.zip = reader.GetInt64(5);
+                            bookModel.phoneNumber = reader.GetInt64(6);
+                            bookModel.emailId = reader.GetString(7);
+                            bookModel.contactType = reader.GetString(8);
+                            bookModel.addressBookName = reader.GetString(9);
+                            Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
+                                $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
+                                $" Phone Number: {bookModel.phoneNumber}\n Contact Type: {bookModel.contactType}\n Address Book Name : {bookModel.addressBookName}");
+                            Console.WriteLine("\n\n");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No Data found");
+                    }
+                    reader.Close();
+                }
+            }
+            /// Catching any type of exception generated during the run time
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }
     }
 }
