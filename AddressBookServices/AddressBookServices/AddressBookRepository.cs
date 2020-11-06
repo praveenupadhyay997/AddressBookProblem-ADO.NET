@@ -81,7 +81,7 @@ namespace AddressBookServices
                             bookModel.addressBookName = reader.GetString(9);
                             Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
                                 $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
-                                $" Phone Number: {bookModel.phoneNumber}\n Contact Type: {bookModel.contactType}\n Address Book Name : {bookModel.addressBookName}");
+                                $"Phone Number: {bookModel.phoneNumber}\nContact Type: {bookModel.contactType}\nAddress Book Name : {bookModel.addressBookName}");
                             Console.WriteLine("\n\n");
                         }
                     }
@@ -412,7 +412,7 @@ namespace AddressBookServices
             }
         }
         /// <summary>
-        /// UC7 -- Function to ge the sorted data by alphabetically for the passed city
+        /// UC7 -- Function to get the sorted data by alphabetically for the passed city
         /// </summary>
         /// <param name="cityName"></param>
         public void SortDetailsAlphabeticallyByCity(string cityName)
@@ -473,6 +473,59 @@ namespace AddressBookServices
                 throw new Exception(ex.Message);
             }
             /// Alway ensuring the closing of the connection
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }      
+        /// <summary>
+        /// UC8 -- Function to get the count of the records stored in contact type using the group by clause
+        /// </summary>
+        public void GetCountOfContactType()
+        {
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            string query = "";
+            try
+            {
+                /// Using the connection established
+                using (connectionToServer)
+                {
+                    /// Query to get the data from the table
+                    query = @"select contactType, Count(firstName) from dbo.addressBookDatabase
+                                    group by contactType";
+                    /// Impementing the command on the connection fetched database table
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Opening the connection to start mapping
+                    connectionToServer.Open();
+                    /// executing the sql data reader to fetch the records
+                    SqlDataReader reader = command.ExecuteReader();
+                    /// executing for not null
+                    if (reader.HasRows)
+                    {
+                        /// Moving to the next record from the table
+                        /// Mapping the data to the retrieved data from executing the query on the table
+                        while (reader.Read())
+                        {
+                            string contactTypeInAddressBook = reader.GetString(0);
+                            int count = reader.GetInt32(1);
+                            Console.WriteLine($"Number of Contacts Stored as {contactTypeInAddressBook} = {count}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No Data found");
+                    }
+                    reader.Close();
+                }
+            }
+            /// Catching any type of exception generated during the run time
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
             finally
             {
                 connectionToServer.Close();

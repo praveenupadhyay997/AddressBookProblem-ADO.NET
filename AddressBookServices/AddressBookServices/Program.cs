@@ -138,6 +138,8 @@ namespace AddressBookServices
             GetCountByParticularCityOrState();
             /// UC7 -- Sort the data by first name for the given city
             SortByName();
+            /// UC8 -- Get the count of the contacts stored in a particular contact type
+            repository.GetCountOfContactType();
         }
     }
 }
