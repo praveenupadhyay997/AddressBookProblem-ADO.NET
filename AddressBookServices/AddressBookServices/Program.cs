@@ -4,14 +4,19 @@
 // </copyright>
 // <creator Name="Praveen Kumar Upadhyay"/>
 // --------------------------------------------------------------------------------------------------------------------
-using System;
-using System.ComponentModel;
-
 namespace AddressBookServices
 {
+    using System;
+    using System.ComponentModel;
     class Program
     {
+        /// <summary>
+        /// Creating  the instance of the address book repository
+        /// </summary>
         public static AddressBookRepository repository = new AddressBookRepository();
+        /// <summary>
+        /// Creating the address book model instance
+        /// </summary>
         public static AddressBookModel bookModel = new AddressBookModel();
         /// <summary>
         /// Method to take the input for the new records
@@ -46,6 +51,7 @@ namespace AddressBookServices
         {
             Console.WriteLine("Enter the name of the record to edit.");
             string recordName = Console.ReadLine();
+            /// Getting the data which you want to update
             Console.WriteLine("Enter the choice you want to update ===>");
             Console.WriteLine("1.Contact Type.");
             Console.WriteLine("2.Address Book Name.");
@@ -56,11 +62,13 @@ namespace AddressBookServices
                 case 1:
                     Console.WriteLine("Enter the new contact type (Friends,Family and Profession) -");
                     string type = Console.ReadLine();
+                    /// Getting the return for the result of the update query
                     result = repository.EditContactUsingName(recordName, type, choice);
                         break;
                 case 2:
                     Console.WriteLine("Enter the address book name -");
                     string addressBookName = Console.ReadLine();
+                    /// Getting the return for the result of the update query
                     result = repository.EditContactUsingName(recordName, addressBookName, choice);
                     break;
 
@@ -69,7 +77,7 @@ namespace AddressBookServices
                     break;
             }
             /// Testing for the success of the update to the table
-                Console.WriteLine((result)? "Updated Successfully": "Update failed");
+            Console.WriteLine((result)? "Updated Successfully": "Update failed");
         }
         /// <summary>
         /// Method driver for the city or state details by particular city or state
@@ -97,6 +105,15 @@ namespace AddressBookServices
             string cityOrState = Console.ReadLine();
             repository.GetCountOfCityOrState(cityOrState, choice);
         }
+        /// <summary>
+        /// Method driver for sorting the data records by the name passed
+        /// </summary>
+        public static void SortByName()
+        {
+            Console.WriteLine("Enter the name of City by which you want to sort the data alphabetically by name -");
+            string city = Console.ReadLine();
+            repository.SortDetailsAlphabeticallyByCity(city);
+        }
         static void Main(string[] args)
         {
             Console.WriteLine("==================================================");
@@ -119,6 +136,8 @@ namespace AddressBookServices
             GetByCityOrState();
             /// UC6 -- Get the count of the record of the contacts in the address book of a city or state
             GetCountByParticularCityOrState();
+            /// UC7 -- Sort the data by first name for the given city
+            SortByName();
         }
     }
 }

@@ -4,13 +4,13 @@
 // </copyright>
 // <creator Name="Praveen Kumar Upadhyay"/>
 // --------------------------------------------------------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Text;
-
 namespace AddressBookServices
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.SqlClient;
+    using System.Text;
+
     class DBConnection
     {
         /// <summary>

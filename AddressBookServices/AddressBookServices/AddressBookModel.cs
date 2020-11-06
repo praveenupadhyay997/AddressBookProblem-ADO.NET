@@ -4,12 +4,11 @@
 // </copyright>
 // <creator Name="Praveen Kumar Upadhyay"/>
 // --------------------------------------------------------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace AddressBookServices
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
     /// <summary>
     /// Class to map the relational data base model to a entity
     /// Contains fields mimicing the exact replica of that of the table level
