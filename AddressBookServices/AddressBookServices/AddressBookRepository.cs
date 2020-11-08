@@ -264,7 +264,7 @@ namespace AddressBookServices
         /// UC5 -- Function to get the detail of the records belonging to a city or state
         /// </summary>
         /// <param name="gender"></param>
-        public void GetTheDetailOfRecordForCityOrState(string data, int choice)
+        public void GetTheDetailOfRecordForCityOrState(string data, int choice, int property)
         {
             AddressBookModel bookModel = new AddressBookModel();
             /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
@@ -279,15 +279,39 @@ namespace AddressBookServices
                 {
                     if (choice == 1)
                     {
-                        /// Query to get the data from the table
-                        query = @"select * from dbo.addressBookDatabase
+                        if (property == 1)
+                        {
+                            /// Query to get the data from the table
+                            query = @"select * from dbo.addressBookDatabase
                                    where city=@parameter";
+                        }
+                        else
+                        {
+                            query = @"SELECT t.contactId,t.firstName, t.secondName, t.phoneNumber, t.emailId, 
+                                     b.addressBookName, d.address, d.city, d.state, d.zip, c.contactType
+                                     FROM addressBook_Table t join address_Book b ON t.contactId = b.contactId
+                                     join address_Detail d ON t.contactId = d.contactId 
+                                     join contact_type c on t.contactId = c.contactId
+                                     where d.city = @parameter";
+                        }
                     }
                     else if(choice == 2)
                     {
-                        // Query to get the data from the table
-                        query = @"select * from dbo.addressBookDatabase
+                        if(property == 1)
+                        {
+                            // Query to get the data from the table
+                            query = @"select * from dbo.addressBookDatabase
                                    where state=@parameter";
+                        }
+                        else
+                        {
+                            query = @"SELECT t.contactId,t.firstName, t.secondName, t.phoneNumber, t.emailId, 
+                                     b.addressBookName, d.address, d.city, d.state, d.zip, c.contactType
+                                     FROM addressBook_Table t join address_Book b ON t.contactId = b.contactId
+                                     join address_Detail d ON t.contactId = d.contactId 
+                                     join contact_type c on t.contactId = c.contactId
+                                     where d.state = @parameter";
+                        }
                     }
                     else
                     {
@@ -308,20 +332,42 @@ namespace AddressBookServices
                         /// Mapping the data to the retrieved data from executing the query on the table
                         while (reader.Read())
                         {
-                            bookModel.firstName = reader.GetString(0);
-                            bookModel.secondName = reader.GetString(1);
-                            bookModel.address = reader.GetString(2);
-                            bookModel.city = reader.GetString(3);
-                            bookModel.state = reader.GetString(4);
-                            bookModel.zip = reader.GetInt64(5);
-                            bookModel.phoneNumber = reader.GetInt64(6);
-                            bookModel.emailId = reader.GetString(7);
-                            bookModel.contactType = reader.GetString(8);
-                            bookModel.addressBookName = reader.GetString(9);
-                            Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
-                                $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
-                                $" Phone Number: {bookModel.phoneNumber}\n Contact Type: {bookModel.contactType}\n Address Book Name : {bookModel.addressBookName}");
-                            Console.WriteLine("\n\n");
+                            if(property == 1)
+                            {
+                                bookModel.firstName = reader.GetString(0);
+                                bookModel.secondName = reader.GetString(1);
+                                bookModel.address = reader.GetString(2);
+                                bookModel.city = reader.GetString(3);
+                                bookModel.state = reader.GetString(4);
+                                bookModel.zip = reader.GetInt64(5);
+                                bookModel.phoneNumber = reader.GetInt64(6);
+                                bookModel.emailId = reader.GetString(7);
+                                bookModel.contactType = reader.GetString(8);
+                                bookModel.addressBookName = reader.GetString(9);
+                                Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
+                                    $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
+                                    $" Phone Number: {bookModel.phoneNumber}\n Contact Type: {bookModel.contactType}\n Address Book Name : {bookModel.addressBookName}");
+                                Console.WriteLine("\n\n");
+                            }
+                            else
+                            {
+                                bookModel.contactID = reader.GetInt32(0);
+                                bookModel.firstName = reader.GetString(1);
+                                bookModel.secondName = reader.GetString(2);
+                                bookModel.phoneNumber = reader.GetInt64(3);
+                                bookModel.emailId = reader.GetString(4);
+                                bookModel.addressBookName = reader.GetString(5);
+                                bookModel.address = reader.GetString(6);
+                                bookModel.city = reader.GetString(7);
+                                bookModel.state = reader.GetString(8);
+                                bookModel.ZIP = reader.GetInt32(9);
+                                bookModel.contactType = reader.GetString(10);
+
+                                Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
+                                    $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.ZIP}\n" +
+                                    $"Phone Number: {bookModel.phoneNumber}\nContact Type: {bookModel.contactType}\nAddress Book Name : {bookModel.addressBookName}");
+                                Console.WriteLine("\n\n");
+                            }
                         }
                     }
                     else
@@ -346,7 +392,7 @@ namespace AddressBookServices
         /// </summary>
         /// <param name="data"></param>
         /// <param name="choice"></param>
-        public void GetCountOfCityOrState(string data, int choice)
+        public void GetCountOfCityOrState(string data, int choice, int property)
         {
             /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
             DBConnection dbc = new DBConnection();
@@ -360,15 +406,37 @@ namespace AddressBookServices
                 {
                     if (choice == 1)
                     {
-                        /// Query to get the data from the table
-                        query = @"select Count(firstName) from dbo.addressBookDatabase
+                        if (property == 1)
+                        {
+                            /// Query to get the data from the table
+                            query = @"select Count(firstName) from dbo.addressBookDatabase
                                    where city=@parameter group by city";
+                        }
+                        else
+                        {
+                            query = @"SELECT Count(t.firstName)
+                                     FROM addressBook_Table t join address_Book b ON t.contactId = b.contactId
+                                     join address_Detail d ON t.contactId = d.contactId 
+                                     join contact_type c on t.contactId = c.contactId
+                                     where d.city = @parameter group by d.city";
+                        }
                     }
                     else if (choice == 2)
                     {
-                        // Query to get the data from the table
-                        query = @"select Count(firstName) from dbo.addressBookDatabase
+                        if(property == 1)
+                        {
+                            // Query to get the data from the table
+                            query = @"select Count(firstName) from dbo.addressBookDatabase
                                    where state=@parameter group by state";
+                        }
+                        else
+                        {
+                            query = @"SELECT Count(t.firstName)
+                                     FROM addressBook_Table t join address_Book b ON t.contactId = b.contactId
+                                     join address_Detail d ON t.contactId = d.contactId 
+                                     join contact_type c on t.contactId = c.contactId
+                                     where d.state = @parameter group by d.state";
+                        }
                     }
                     else
                     {
@@ -415,20 +483,34 @@ namespace AddressBookServices
         /// UC7 -- Function to get the sorted data by alphabetically for the passed city
         /// </summary>
         /// <param name="cityName"></param>
-        public void SortDetailsAlphabeticallyByCity(string cityName)
+        public void SortDetailsAlphabeticallyByCity(string cityName, int property)
         {
             /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
             DBConnection dbc = new DBConnection();
             /// Calling the Get connection method to establish the connection to the Sql Server
             connectionToServer = dbc.GetConnection();
+            /// Assigning the query variable to initialise the query string
+            string query = "";
             /// Creating the address book model class object
             AddressBookModel bookModel = new AddressBookModel();
             try
             {
                 using (connectionToServer)
                 {
-                    /// Query to get all the data from the table
-                    string query = @"select * from addressBookDatabase where city = @parameter order by firstName";
+                    if(property==1)
+                    {
+                        /// Query to get all the data from the table
+                        query = @"select * from addressBookDatabase where city = @parameter order by firstName";
+                    }
+                    else
+                    {
+                        query = @"SELECT t.contactId,t.firstName, t.secondName, t.phoneNumber, t.emailId, 
+                                     b.addressBookName, d.address, d.city, d.state, d.zip, c.contactType
+                                     FROM addressBook_Table t join address_Book b ON t.contactId = b.contactId
+                                     join address_Detail d ON t.contactId = d.contactId 
+                                     join contact_type c on t.contactId = c.contactId
+                                     where d.city = @parameter";
+                    }
                     /// Impementing the command on the connection fetched database table
                     SqlCommand command = new SqlCommand(query, connectionToServer);
                     /// Binding the parameter to the formal parameters
@@ -444,20 +526,42 @@ namespace AddressBookServices
                         /// Mapping the data to the employee model class object
                         while (reader.Read())
                         {
-                            bookModel.firstName = reader.GetString(0);
-                            bookModel.secondName = reader.GetString(1);
-                            bookModel.address = reader.GetString(2);
-                            bookModel.city = reader.GetString(3);
-                            bookModel.state = reader.GetString(4);
-                            bookModel.zip = reader.GetInt64(5);
-                            bookModel.phoneNumber = reader.GetInt64(6);
-                            bookModel.emailId = reader.GetString(7);
-                            bookModel.contactType = reader.GetString(8);
-                            bookModel.addressBookName = reader.GetString(9);
-                            Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
-                                $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
-                                $" Phone Number: {bookModel.phoneNumber}\n Contact Type: {bookModel.contactType}\n Address Book Name : {bookModel.addressBookName}");
-                            Console.WriteLine("\n\n");
+                            if (property == 1)
+                            {
+                                bookModel.firstName = reader.GetString(0);
+                                bookModel.secondName = reader.GetString(1);
+                                bookModel.address = reader.GetString(2);
+                                bookModel.city = reader.GetString(3);
+                                bookModel.state = reader.GetString(4);
+                                bookModel.zip = reader.GetInt64(5);
+                                bookModel.phoneNumber = reader.GetInt64(6);
+                                bookModel.emailId = reader.GetString(7);
+                                bookModel.contactType = reader.GetString(8);
+                                bookModel.addressBookName = reader.GetString(9);
+                                Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
+                                    $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.zip}\n" +
+                                    $" Phone Number: {bookModel.phoneNumber}\n Contact Type: {bookModel.contactType}\n Address Book Name : {bookModel.addressBookName}");
+                                Console.WriteLine("\n\n");
+                            }
+                            else
+                            {
+                                bookModel.contactID = reader.GetInt32(0);
+                                bookModel.firstName = reader.GetString(1);
+                                bookModel.secondName = reader.GetString(2);
+                                bookModel.phoneNumber = reader.GetInt64(3);
+                                bookModel.emailId = reader.GetString(4);
+                                bookModel.addressBookName = reader.GetString(5);
+                                bookModel.address = reader.GetString(6);
+                                bookModel.city = reader.GetString(7);
+                                bookModel.state = reader.GetString(8);
+                                bookModel.ZIP = reader.GetInt32(9);
+                                bookModel.contactType = reader.GetString(10);
+
+                                Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
+                                    $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.ZIP}\n" +
+                                    $"Phone Number: {bookModel.phoneNumber}\nContact Type: {bookModel.contactType}\nAddress Book Name : {bookModel.addressBookName}");
+                                Console.WriteLine("\n\n");
+                            }
                         }
                     }
                     else
@@ -481,7 +585,7 @@ namespace AddressBookServices
         /// <summary>
         /// UC8 -- Function to get the count of the records stored in contact type using the group by clause
         /// </summary>
-        public void GetCountOfContactType()
+        public void GetCountOfContactType(int property)
         {
             /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
             DBConnection dbc = new DBConnection();
@@ -494,8 +598,19 @@ namespace AddressBookServices
                 using (connectionToServer)
                 {
                     /// Query to get the data from the table
-                    query = @"select contactType, Count(firstName) from dbo.addressBookDatabase
+                    if (property == 1)
+                    {
+                        query = @"select contactType, Count(firstName) from dbo.addressBookDatabase
                                     group by contactType";
+                    }
+                    else
+                    {
+                        query = @"SELECT c.contactType, Count(t.firstName)
+                                     FROM addressBook_Table t join address_Book b ON t.contactId = b.contactId
+                                     join address_Detail d ON t.contactId = d.contactId 
+                                     join contact_type c on t.contactId = c.contactId
+                                     group by c.contactType";
+                    }
                     /// Impementing the command on the connection fetched database table
                     SqlCommand command = new SqlCommand(query, connectionToServer);
                     /// Opening the connection to start mapping
@@ -601,6 +716,51 @@ namespace AddressBookServices
             finally
             {
                 connectionToServer.Close();
+            }
+        }
+        /// <summary>
+        /// UC10 -- Function to ensure that the other use cases are working fine after the join operation
+        /// </summary>
+        public void EnsuringOtherUseCasesForJoinedTable()
+        {
+            Console.WriteLine("Enter the choice for the use cases you want to ensure ===>");
+            Console.WriteLine("1.Get data by City.");
+            Console.WriteLine("2.Get data by State.");
+            Console.WriteLine("3.Size Of address book by City.");
+            Console.WriteLine("4.Size Of address book by State.");
+            Console.WriteLine("5.Sort alphabetically by name for a City.");
+            Console.WriteLine("6.Get Number Of Contact By Type.");
+            int choice = Convert.ToInt32(Console.ReadLine());
+            switch(choice)
+            {
+                case 1:
+                    Console.WriteLine("Enter the city you want to fetch data for...");
+                    string city = Console.ReadLine();
+                    GetTheDetailOfRecordForCityOrState(city, 1, 2);
+                    break;
+                case 2:
+                    Console.WriteLine("Enter the state you want to fetch data for...");
+                    string state = Console.ReadLine();
+                    GetTheDetailOfRecordForCityOrState(state, 2, 2);
+                    break;
+                case 3:
+                    Console.WriteLine("Enter the city you want to fetch size of address book for...");
+                    string cityForCount = Console.ReadLine();
+                    GetCountOfCityOrState(cityForCount, 2, 2);
+                    break;
+                case 4:
+                    Console.WriteLine("Enter the city you want to fetch size of address book for...");
+                    string stateForCount = Console.ReadLine();
+                    GetCountOfCityOrState(stateForCount, 2, 2);
+                    break;
+                case 5:
+                    Console.WriteLine("Enter the city you want to fetch record alphabetically of address book for...");
+                    string cityForSort = Console.ReadLine();
+                    SortDetailsAlphabeticallyByCity(cityForSort, 2);
+                    break;
+                case 6:
+                    GetCountOfContactType(2);
+                    break;
             }
         }
     }

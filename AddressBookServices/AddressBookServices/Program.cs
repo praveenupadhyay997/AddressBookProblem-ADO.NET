@@ -90,7 +90,7 @@ namespace AddressBookServices
             int choice = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine("Enter the name of City or State by which you want the data -");
             string cityOrState = Console.ReadLine();
-            repository.GetTheDetailOfRecordForCityOrState(cityOrState, choice);
+            repository.GetTheDetailOfRecordForCityOrState(cityOrState, choice, 1);
         }
         /// <summary>
         /// Method driver for the city or state count by particular city or state
@@ -103,7 +103,7 @@ namespace AddressBookServices
             int choice = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine("Enter the name of City or State by which you want the data -");
             string cityOrState = Console.ReadLine();
-            repository.GetCountOfCityOrState(cityOrState, choice);
+            repository.GetCountOfCityOrState(cityOrState, choice, 1);
         }
         /// <summary>
         /// Method driver for sorting the data records by the name passed
@@ -112,7 +112,7 @@ namespace AddressBookServices
         {
             Console.WriteLine("Enter the name of City by which you want to sort the data alphabetically by name -");
             string city = Console.ReadLine();
-            repository.SortDetailsAlphabeticallyByCity(city);
+            repository.SortDetailsAlphabeticallyByCity(city, 1);
         }
         static void Main(string[] args)
         {
@@ -122,26 +122,28 @@ namespace AddressBookServices
             AddressBookRepository repository = new AddressBookRepository();
             repository.EnsureDataBaseConnection();
             Console.ReadKey();
-            /// UC1 -- Getting all the records from the address book table
-            repository.GetAllRecords();
-            /// UC2 -- Insert a record to the address book
-            TakeInputOfRecords();
-            /// Testing for the success of the insertion to the table
-            Console.WriteLine(repository.AddDataToTable(bookModel) ? "Inserted Successfully" : "Insert failed");
-            /// UC3 -- Update a record to the address book
-            UpdateCall();
-            /// UC4 -- Delete a record from the table
-            Console.WriteLine(repository.DeleteContactUsingName() ? "Deleted Successfully" : "Delete failed");
-            /// UC5 -- Get the details of the record of the contacts in the address book of a city or state
-            GetByCityOrState();
-            /// UC6 -- Get the count of the record of the contacts in the address book of a city or state
-            GetCountByParticularCityOrState();
-            /// UC7 -- Sort the data by first name for the given city
-            SortByName();
-            /// UC8 -- Get the count of the contacts stored in a particular contact type
-            repository.GetCountOfContactType();
-            /// UC9 -- Getall the details from the ER - Diagram
-            repository.GetAllDataFromTableUsingJoin();
+            ///// UC1 -- Getting all the records from the address book table
+            //repository.GetAllRecords();
+            ///// UC2 -- Insert a record to the address book
+            //TakeInputOfRecords();
+            ///// Testing for the success of the insertion to the table
+            //Console.WriteLine(repository.AddDataToTable(bookModel) ? "Inserted Successfully" : "Insert failed");
+            ///// UC3 -- Update a record to the address book
+            //UpdateCall();
+            ///// UC4 -- Delete a record from the table
+            //Console.WriteLine(repository.DeleteContactUsingName() ? "Deleted Successfully" : "Delete failed");
+            ///// UC5 -- Get the details of the record of the contacts in the address book of a city or state
+            //GetByCityOrState();
+            ///// UC6 -- Get the count of the record of the contacts in the address book of a city or state
+            //GetCountByParticularCityOrState();
+            ///// UC7 -- Sort the data by first name for the given city
+            //SortByName();
+            ///// UC8 -- Get the count of the contacts stored in a particular contact type
+            //repository.GetCountOfContactType(1);
+            ///// UC9 -- Getall the details from the ER - Diagram
+            //repository.GetAllDataFromTableUsingJoin();
+            /// UC10 -- Ensuring the other use cases working fine for retrieval
+            repository.EnsuringOtherUseCasesForJoinedTable();
         }
     }
 }
