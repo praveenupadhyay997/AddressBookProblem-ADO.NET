@@ -15,6 +15,8 @@ namespace AddressBookServices
     /// </summary>
     public class AddressBookModel
     {
+        public int contactID { get; set; }
+        public int ZIP { get; set; }
         public string firstName { get; set; }
         public string secondName { get; set; }
         public string address { get; set; }

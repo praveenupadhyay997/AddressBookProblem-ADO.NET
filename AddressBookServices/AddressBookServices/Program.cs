@@ -140,6 +140,8 @@ namespace AddressBookServices
             SortByName();
             /// UC8 -- Get the count of the contacts stored in a particular contact type
             repository.GetCountOfContactType();
+            /// UC9 -- Getall the details from the ER - Diagram
+            repository.GetAllDataFromTableUsingJoin();
         }
     }
 }

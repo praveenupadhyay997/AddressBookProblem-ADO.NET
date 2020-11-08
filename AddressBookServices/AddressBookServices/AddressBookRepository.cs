@@ -531,5 +531,77 @@ namespace AddressBookServices
                 connectionToServer.Close();
             }
         }
+        /// <summary>
+        /// UC9 -- Function to get the entire data from the table after implementing the concept of ER-Diagram
+        /// Using the concept of join on the table
+        /// </summary>
+        public void GetAllDataFromTableUsingJoin()
+        {
+            /// Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            /// Calling the Get connection method to establish the connection to the Sql Server
+            connectionToServer = dbc.GetConnection();
+            /// Creating the address book model class object
+            AddressBookModel bookModel = new AddressBookModel();
+            try
+            {
+                using (connectionToServer)
+                {
+                    /// Query to get all the data from the table
+                    string query = @"SELECT t.contactId,t.firstName, t.secondName, t.phoneNumber, t.emailId, 
+                                     b.addressBookName, d.address, d.city, d.state, d.zip, c.contactType
+                                     FROM addressBook_Table t join address_Book b ON t.contactId = b.contactId
+                                     join address_Detail d ON t.contactId = d.contactId 
+                                     join contact_type c on t.contactId = c.contactId;";
+                    /// Impementing the command on the connection fetched database table
+
+                    SqlCommand command = new SqlCommand(query, connectionToServer);
+                    /// Opening the connection to start mapping
+                    connectionToServer.Open();
+                    /// executing the sql data reader to fetch the records
+                    SqlDataReader reader = command.ExecuteReader();
+                    /// executing for not null
+                    if (reader.HasRows)
+                    {
+                        /// Moving to the next record from the table
+                        /// Mapping the data to the employee model class object
+                        while (reader.Read())
+                        {
+                            bookModel.contactID = reader.GetInt32(0);
+                            bookModel.firstName = reader.GetString(1);
+                            bookModel.secondName = reader.GetString(2);
+                            bookModel.phoneNumber = reader.GetInt64(3);
+                            bookModel.emailId = reader.GetString(4);
+                            bookModel.addressBookName = reader.GetString(5);
+                            bookModel.address = reader.GetString(6);
+                            bookModel.city = reader.GetString(7);
+                            bookModel.state = reader.GetString(8);
+                            bookModel.ZIP = reader.GetInt32(9);
+                            bookModel.contactType = reader.GetString(10);
+
+                            Console.WriteLine($"First Name:{bookModel.firstName}\nSecond Name:{bookModel.secondName}\n" +
+                                $"Address:{bookModel.address}, {bookModel.city}, {bookModel.state} PinCode: {bookModel.ZIP}\n" +
+                                $"Phone Number: {bookModel.phoneNumber}\nContact Type: {bookModel.contactType}\nAddress Book Name : {bookModel.addressBookName}");
+                            Console.WriteLine("\n\n");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No data found");
+                    }
+                    reader.Close();
+                }
+            }
+            /// Catching the null record exception
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            /// Alway ensuring the closing of the connection
+            finally
+            {
+                connectionToServer.Close();
+            }
+        }
     }
 }
